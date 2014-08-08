@@ -21,6 +21,7 @@
 		186059B71994A15E0049C6EA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 186059991994A15E0049C6EA /* UIKit.framework */; };
 		186059BF1994A15E0049C6EA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186059BD1994A15E0049C6EA /* InfoPlist.strings */; };
 		186059C11994A15E0049C6EA /* MRStackViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 186059C01994A15E0049C6EA /* MRStackViewTests.m */; };
+		186059CC1994A2DD0049C6EA /* MRStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 186059CB1994A2DD0049C6EA /* MRStackView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,8 @@
 		186059BC1994A15E0049C6EA /* MRStackViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MRStackViewTests-Info.plist"; sourceTree = "<group>"; };
 		186059BE1994A15E0049C6EA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		186059C01994A15E0049C6EA /* MRStackViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MRStackViewTests.m; sourceTree = "<group>"; };
+		186059CA1994A2DD0049C6EA /* MRStackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStackView.h; sourceTree = "<group>"; };
+		186059CB1994A2DD0049C6EA /* MRStackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStackView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +122,8 @@
 				186059AB1994A15E0049C6EA /* MRViewController.m */,
 				186059AD1994A15E0049C6EA /* Images.xcassets */,
 				1860599C1994A15E0049C6EA /* Supporting Files */,
+				186059CA1994A2DD0049C6EA /* MRStackView.h */,
+				186059CB1994A2DD0049C6EA /* MRStackView.m */,
 			);
 			path = MRStackView;
 			sourceTree = "<group>";
@@ -250,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				186059CC1994A2DD0049C6EA /* MRStackView.m in Sources */,
 				186059A21994A15E0049C6EA /* main.m in Sources */,
 				186059AC1994A15E0049C6EA /* MRViewController.m in Sources */,
 				186059A61994A15E0049C6EA /* MRAppDelegate.m in Sources */,
