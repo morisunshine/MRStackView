@@ -130,8 +130,18 @@
 
 - (void)showPagesFullScreen:(NSInteger)index
 {
-    [UIView animateWithDuration:0.4 animations:^{
-        UIView *page = (UIView *)self.pages[index];
+    UIView *viewControllerView;
+    UIView *page = (UIView *)self.pages[index];
+    if (self.delegate) {
+        UIViewController *viewController = [self.delegate viewControllerForStackView:self selectedPageAtIndex:index];
+        viewControllerView = viewController.view;
+        [page addSubview:viewControllerView];
+        UIViewController *parentViewController = (UIViewController *)self.delegate;
+        [parentViewController addChildViewController:viewController];
+        [viewController willMoveToParentViewController:parentViewController];
+    }
+    
+    [UIView animateWithDuration:4 animations:^{
         CGRect rect  = page.frame;
         rect.origin.y = self.scollView.contentOffset.y;
         page.frame = rect;

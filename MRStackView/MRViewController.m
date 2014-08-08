@@ -26,6 +26,7 @@
     [super viewDidLoad];
     
     [self.view addSubview:self.stackView];
+    self.view.backgroundColor = [UIColor grayColor];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -88,6 +89,14 @@
 - (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index
 {
     
+}
+
+- (UIViewController *)viewControllerForStackView:(MRStackView *)tackView selectedPageAtIndex:(NSInteger)index
+{
+    UIViewController *viewController = [[UIViewController alloc] init];
+    viewController.view.backgroundColor = [UIColor whiteColor];
+    
+    return viewController;
 }
 
 #pragma mark - Private Methods -
