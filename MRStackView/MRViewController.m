@@ -94,7 +94,7 @@
 - (UIViewController *)viewControllerForStackView:(MRStackView *)tackView selectedPageAtIndex:(NSInteger)index
 {
     UIViewController *viewController = [[UIViewController alloc] init];
-    viewController.view.backgroundColor = [UIColor whiteColor];
+    viewController.view.backgroundColor = [self colorRandom];
     
     return viewController;
 }

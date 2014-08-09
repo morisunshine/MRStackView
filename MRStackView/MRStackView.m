@@ -28,6 +28,7 @@
 @property (nonatomic) CGFloat pageHeight;
 @property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) NSRange visiblePages;
+@property (nonatomic) UIViewController *currentViewController;
 
 @end
 
@@ -107,8 +108,8 @@
 
         self.scollView.scrollEnabled = NO;
     } else {
-        self.selectedPageIndex = -1;
         [self resetPages];
+        self.selectedPageIndex = -1;
     }
 }
 
@@ -118,13 +119,23 @@
     NSInteger stop = self.visiblePages.location + self.visiblePages.length;
     [UIView beginAnimations:@"starckReset" context:nil];
     [UIView setAnimationDuration:0.4];
-    for (NSInteger i = start; i < stop; i++) {
-        UIView *page = self.pages[i];
-        CGRect rect = page.frame;
-        rect.origin.y = OFFSET_TOP + i * self.pageHeight;
-        page.frame = rect;
-    }
+    
     [UIView commitAnimations];
+    [UIView animateWithDuration:0.4 animations:^{
+        for (NSInteger i = start; i < stop; i++) {
+            UIView *page = self.pages[i];
+            CGRect rect = page.frame;
+            rect.origin.y = OFFSET_TOP + i * self.pageHeight;
+            page.frame = rect;
+        }
+    } completion:^(BOOL finished) {
+        if (finished) {
+            UIView *view = self.currentViewController.view;
+            [view removeFromSuperview];
+            [self.currentViewController removeFromParentViewController];
+        }
+        
+    }];
     self.scollView.scrollEnabled = YES;
 }
 
@@ -133,15 +144,15 @@
     UIView *viewControllerView;
     UIView *page = (UIView *)self.pages[index];
     if (self.delegate) {
-        UIViewController *viewController = [self.delegate viewControllerForStackView:self selectedPageAtIndex:index];
-        viewControllerView = viewController.view;
+        self.currentViewController = [self.delegate viewControllerForStackView:self selectedPageAtIndex:index];
+        viewControllerView = self.currentViewController.view;
         [page addSubview:viewControllerView];
         UIViewController *parentViewController = (UIViewController *)self.delegate;
-        [parentViewController addChildViewController:viewController];
-        [viewController willMoveToParentViewController:parentViewController];
+        [parentViewController addChildViewController:self.currentViewController];
+        [self.currentViewController willMoveToParentViewController:parentViewController];
     }
     
-    [UIView animateWithDuration:4 animations:^{
+    [UIView animateWithDuration:0.4 animations:^{
         CGRect rect  = page.frame;
         rect.origin.y = self.scollView.contentOffset.y;
         page.frame = rect;
