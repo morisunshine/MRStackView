@@ -193,7 +193,7 @@
         NSInteger startIndex = 0;
         for (NSInteger i = 0; i < self.pages.count; i++) {
             if (self.pageHeight * (i+1) > startPoint.y) {
-                startIndex = 1;
+                startIndex = i;
                 break;
             }
         }
@@ -225,7 +225,6 @@
                 [self removePageAtIndex:i];
             }
         }
-        
     }
 }
 
