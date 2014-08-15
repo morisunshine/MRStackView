@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		181FA184199E115F0089DF98 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 181FA183199E115F0089DF98 /* Reveal.framework */; };
 		186059961994A15E0049C6EA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 186059951994A15E0049C6EA /* Foundation.framework */; };
 		186059981994A15E0049C6EA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 186059971994A15E0049C6EA /* CoreGraphics.framework */; };
 		1860599A1994A15E0049C6EA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 186059991994A15E0049C6EA /* UIKit.framework */; };
@@ -22,6 +23,7 @@
 		186059BF1994A15E0049C6EA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186059BD1994A15E0049C6EA /* InfoPlist.strings */; };
 		186059C11994A15E0049C6EA /* MRStackViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 186059C01994A15E0049C6EA /* MRStackViewTests.m */; };
 		18FF449D199854E400BBC071 /* MRStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FF449C199854E400BBC071 /* MRStackView.m */; };
+		18FF44AD1998AE3300BBC071 /* MRStackViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		181FA183199E115F0089DF98 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Reveal.framework; sourceTree = "<group>"; };
 		186059921994A15E0049C6EA /* MRStackView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MRStackView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		186059951994A15E0049C6EA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		186059971994A15E0049C6EA /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -56,6 +59,8 @@
 		186059C01994A15E0049C6EA /* MRStackViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MRStackViewTests.m; sourceTree = "<group>"; };
 		18FF449B199854E400BBC071 /* MRStackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStackView.h; sourceTree = "<group>"; };
 		18FF449C199854E400BBC071 /* MRStackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStackView.m; sourceTree = "<group>"; };
+		18FF44AB1998AE3300BBC071 /* MRStackViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStackViewCell.h; sourceTree = "<group>"; };
+		18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStackViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +71,7 @@
 				186059981994A15E0049C6EA /* CoreGraphics.framework in Frameworks */,
 				1860599A1994A15E0049C6EA /* UIKit.framework in Frameworks */,
 				186059961994A15E0049C6EA /* Foundation.framework in Frameworks */,
+				181FA184199E115F0089DF98 /* Reveal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +121,7 @@
 		1860599B1994A15E0049C6EA /* MRStackView */ = {
 			isa = PBXGroup;
 			children = (
+				181FA183199E115F0089DF98 /* Reveal.framework */,
 				18FF449A199854E400BBC071 /* MRStackView */,
 				186059A41994A15E0049C6EA /* MRAppDelegate.h */,
 				186059A51994A15E0049C6EA /* MRAppDelegate.m */,
@@ -161,6 +168,8 @@
 			children = (
 				18FF449B199854E400BBC071 /* MRStackView.h */,
 				18FF449C199854E400BBC071 /* MRStackView.m */,
+				18FF44AB1998AE3300BBC071 /* MRStackViewCell.h */,
+				18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */,
 			);
 			path = MRStackView;
 			sourceTree = "<group>";
@@ -265,6 +274,7 @@
 			files = (
 				18FF449D199854E400BBC071 /* MRStackView.m in Sources */,
 				186059A21994A15E0049C6EA /* main.m in Sources */,
+				18FF44AD1998AE3300BBC071 /* MRStackViewCell.m in Sources */,
 				186059AC1994A15E0049C6EA /* MRViewController.m in Sources */,
 				186059A61994A15E0049C6EA /* MRAppDelegate.m in Sources */,
 			);
@@ -391,6 +401,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MRStackView",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRStackView/MRStackView-Prefix.pch";
 				INFOPLIST_FILE = "MRStackView/MRStackView-Info.plist";
@@ -404,6 +418,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MRStackView",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MRStackView/MRStackView-Prefix.pch";
 				INFOPLIST_FILE = "MRStackView/MRStackView-Info.plist";

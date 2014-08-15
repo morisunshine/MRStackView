@@ -69,34 +69,43 @@
     return self.pages.count;
 }
 
-- (CGFloat)heightOfPagesForStackView:(MRStackView *)stackView
+- (CGFloat)heightOfBackgroundViewForStackView:(MRStackView *)stackView
 {
-    return 80;
+    return 85;
 }
 
-- (UIView *)stackView:(MRStackView *)stackView pageForIndex:(NSInteger)index
+- (CGFloat)heightOfPagesForStackView:(MRStackView *)stackView
 {
-    UIView *thisView = [stackView dequeueReusablePage];
-    if (!thisView) {
-        thisView = [[UIView alloc] initWithFrame:self.view.bounds];
-        thisView.backgroundColor = [self colorRandom];
-        thisView.layer.cornerRadius = 5;
-        thisView.layer.masksToBounds = YES;
+    return 100;
+}
+
+- (UIView *)stackView:(MRStackView *)stackView backgroundViewForRowAtIndex:(NSInteger)index
+{
+    UIView *backgroundView = [stackView dequeueReusableBackgroundView];
+    
+    if (!backgroundView) {
+        backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+        backgroundView.backgroundColor = [UIColor whiteColor];
     }
-    return thisView;
+    
+    return backgroundView;
+}
+
+- (UIView *)stackView:(MRStackView *)stackView pageForRowAtIndex:(NSInteger)index
+{
+    UIView *page = [stackView dequeueReusablePage];
+    if (!page) {
+        page = [[UIView alloc] initWithFrame:CGRectMake(15, 15, 290, 100)];
+        page.backgroundColor = [self colorRandom];
+        page.layer.cornerRadius = 3;
+    }
+    
+    return page;
 }
 
 - (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index
 {
     
-}
-
-- (UIViewController *)viewControllerForStackView:(MRStackView *)tackView selectedPageAtIndex:(NSInteger)index
-{
-    UIViewController *viewController = [[UIViewController alloc] init];
-    viewController.view.backgroundColor = [self colorRandom];
-    
-    return viewController;
 }
 
 #pragma mark - Private Methods -

@@ -12,22 +12,27 @@
 
 @interface MRStackView : UIView <UIScrollViewDelegate>
 
-@property (nonatomic) id<MRStackViewDelegate> delegate;
+@property (nonatomic, weak) id<MRStackViewDelegate> delegate;
 
 - (UIView *)dequeueReusablePage;
+- (UIView *)dequeueReusableBackgroundView;
 
 @end
 
 @protocol MRStackViewDelegate
 
-- (UIView *)stackView:(MRStackView *)stackView pageForIndex:(NSInteger)index;
+- (UIView *)stackView:(MRStackView *)stackView pageForRowAtIndex:(NSInteger)index;
+
+- (UIView *)stackView:(MRStackView *)stackView backgroundViewForRowAtIndex:(NSInteger)index;
 
 - (NSInteger)numberOfPagesForStackView:(MRStackView *)stackView;
 
 - (CGFloat)heightOfPagesForStackView:(MRStackView *)stackView;
 
-- (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index;
+- (CGFloat)heightOfBackgroundViewForStackView:(MRStackView *)stackView;
 
-- (UIViewController *)viewControllerForStackView:(MRStackView *)tackView selectedPageAtIndex:(NSInteger)index;
+@optional
+
+- (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index;
 
 @end

@@ -22,13 +22,14 @@
 
 @property (nonatomic) UIScrollView *scollView;
 @property (nonatomic) NSMutableArray *reusablePages;
+@property (nonatomic) NSMutableArray *pages;
+@property (nonatomic) NSMutableArray *reusableBackgroundViews;
+@property (nonatomic) NSMutableArray *backgroundViews;
+@property (nonatomic) NSRange visibleRange;
 @property (nonatomic) NSInteger selectedPageIndex;
-@property (nonatomic) CGFloat trackedTranslation;
 @property (nonatomic) NSInteger pageCount;
 @property (nonatomic) CGFloat pageHeight;
-@property (nonatomic) NSMutableArray *pages;
-@property (nonatomic) NSRange visiblePages;
-@property (nonatomic) UIViewController *currentViewController;
+@property (nonatomic) CGFloat backgroundViewHeight;
 
 @end
 
@@ -48,29 +49,6 @@
 {
     [super layoutSubviews];
     
-    if (self.delegate) {
-        self.pageCount = [self.delegate numberOfPagesForStackView:self];
-        self.pageHeight = [self.delegate heightOfPagesForStackView:self];
-    }
-    
-    [self.reusablePages removeAllObjects];
-    self.visiblePages = NSMakeRange(0, 0);
-    
-    for (NSInteger i = 0; i < self.pages.count; i++) {
-        [self removePageAtIndex:i];
-    }
-    
-    [self.pages removeAllObjects];
-    
-    for (NSInteger i = 0; i < self.pageCount; i++) {
-        [self.pages addObject:[NSNull null]];
-    }
-    
-    self.scollView.frame = self.bounds;
-    self.scollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds), MAX(CGRectGetHeight(self.bounds), OFFSET_TOP + self.pageCount * self.pageHeight));
-    [self addSubview:self.scollView];
-    
-    [self setPageAtOffset:self.scollView.contentOffset];
     [self reloadVisiblePages];
 }
 
@@ -80,7 +58,9 @@
     self.selectedPageIndex = -1;
     self.pages = [[NSMutableArray alloc] init];
     self.reusablePages = [[NSMutableArray alloc] init];
-    self.visiblePages = NSMakeRange(0, 0);
+    self.backgroundViews = [[NSMutableArray alloc] init];
+    self.reusableBackgroundViews = [[NSMutableArray alloc] init];
+    self.visibleRange = NSMakeRange(0, 0);
 }
 
 #pragma mark - Getters -
@@ -92,6 +72,7 @@
         _scollView.delegate = self;
         _scollView.backgroundColor = [UIColor clearColor];
         _scollView.showsVerticalScrollIndicator = NO;
+        _scollView.alwaysBounceVertical = YES;
     }
     
     return _scollView;
@@ -101,128 +82,143 @@
 
 - (void)selectPageAtIndex:(NSInteger)index
 {
-    if (index != self.selectedPageIndex) {
-        self.selectedPageIndex = index;
-        [self hidePagesExcept:index];
-        [self showPagesFullScreen:index];
-
-        self.scollView.scrollEnabled = NO;
-    } else {
-        [self resetPages];
-        self.selectedPageIndex = -1;
-    }
+//    if (index != self.selectedPageIndex) {
+//        self.selectedPageIndex = index;
+//        [self hidePagesExcept:index];
+//        [self showPagesFullScreen:index];
+//
+//        self.scollView.scrollEnabled = NO;
+//    } else {
+//        [self resetPages];
+//        self.selectedPageIndex = -1;
+//    }
 }
 
 - (void)resetPages
 {
-    NSInteger start = self.visiblePages.location;
-    NSInteger stop = self.visiblePages.location + self.visiblePages.length;
-    [UIView beginAnimations:@"starckReset" context:nil];
-    [UIView setAnimationDuration:0.4];
-    
-    [UIView commitAnimations];
+    NSInteger start = self.visibleRange.location;
+    NSInteger stop = self.visibleRange.location + self.visibleRange.length;
     [UIView animateWithDuration:0.4 animations:^{
         for (NSInteger i = start; i < stop; i++) {
+            
             UIView *page = self.pages[i];
-            CGRect rect = page.frame;
-            rect.origin.y = OFFSET_TOP + i * self.pageHeight;
-            page.frame = rect;
+            
+            if (self.selectedPageIndex == i) {
+                page.frame = CGRectMake(15, 15, CGRectGetWidth(page.frame) - 30, CGRectGetHeight(page.frame) - 15);
+            } else {
+                CGRect rect = page.frame;
+                rect.origin.y = OFFSET_TOP + i * self.pageHeight;
+                page.frame = rect;
+            }
         }
-    } completion:^(BOOL finished) {
-        if (finished) {
-            UIView *view = self.currentViewController.view;
-            [view removeFromSuperview];
-            [self.currentViewController removeFromParentViewController];
-        }
-        
     }];
+    
     self.scollView.scrollEnabled = YES;
 }
 
 - (void)showPagesFullScreen:(NSInteger)index
 {
-    UIView *viewControllerView;
     UIView *page = (UIView *)self.pages[index];
-    if (self.delegate) {
-        self.currentViewController = [self.delegate viewControllerForStackView:self selectedPageAtIndex:index];
-        viewControllerView = self.currentViewController.view;
-        [page addSubview:viewControllerView];
-        UIViewController *parentViewController = (UIViewController *)self.delegate;
-        [parentViewController addChildViewController:self.currentViewController];
-        [self.currentViewController willMoveToParentViewController:parentViewController];
-    }
+    CGRect rect = page.frame;
+    NSLog(@"rect: %@", NSStringFromCGRect(rect));
     
     [UIView animateWithDuration:0.4 animations:^{
-        CGRect rect  = page.frame;
-        rect.origin.y = self.scollView.contentOffset.y;
-        page.frame = rect;
+        CGRect newRect = rect;
+        newRect.origin.y = -rect.origin.y;
+        newRect.origin.x = page.frame.origin.x;
+        page.frame = newRect;
     }];
 }
 
 - (void)hidePagesExcept:(NSInteger)index
 {
-    NSInteger start = self.visiblePages.location;
-    NSInteger stop = self.visiblePages.location + self.visiblePages.length;
-    [UIView beginAnimations:@"stackHide" context:nil];
-    [UIView setAnimationDuration:0.4];
-    for (NSInteger i = start; i < stop; i++) {
-        if (self.selectedPageIndex != i) {
+    NSInteger start = self.visibleRange.location;
+    NSInteger stop = self.visibleRange.location + self.visibleRange.length;
+    [UIView animateWithDuration:0.4 animations:^{
+        for (NSInteger i = start; i < stop; i++) {
             UIView *page = (UIView *)self.pages[i];
             CGRect rect = page.frame;
             rect.origin.y = self.scollView.contentOffset.y + CGRectGetHeight(self.frame) - BOTTOM_OFFSET_HIDE + i * COLLAPSED_OFFSET;
             page.frame = rect;
         }
-    }
-    
-    [UIView commitAnimations];
+    }];
 }
 
 #pragma mark - Displaying Pages -
 
 - (void)reloadVisiblePages
 {
+    if (self.delegate) {
+        self.pageCount = [self.delegate numberOfPagesForStackView:self];
+        self.pageHeight = [self.delegate heightOfPagesForStackView:self];
+        self.backgroundViewHeight = [self.delegate heightOfBackgroundViewForStackView:self];
+    }
     
+    [self.reusablePages removeAllObjects];
+    [self.reusableBackgroundViews removeAllObjects];
+    
+    self.visibleRange = NSMakeRange(0, 0);
+    
+    for (NSInteger i = 0; i < self.backgroundViews.count; i++) {
+        [self removeViewAtIndex:i];
+    }
+    
+    [self.pages removeAllObjects];
+    [self.backgroundViews removeAllObjects];
+    
+    for (NSInteger i = 0; i < self.pageCount; i++) {
+        [self.pages addObject:[NSNull null]];
+        [self.backgroundViews addObject:[NSNull null]];
+    }
+    
+    self.scollView.frame = self.bounds;
+    self.scollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds), MAX(CGRectGetHeight(self.bounds), OFFSET_TOP + self.pageCount * self.backgroundViewHeight));
+    [self addSubview:self.scollView];
+    
+    [self setPageAtOffset:self.scollView.contentOffset];
 }
 
 - (void)setPageAtOffset:(CGPoint)offset
 {
-    if (0 < self.pages.count) {
+    if (0 < self.backgroundViews.count) {
         CGPoint startPoint = CGPointMake(offset.x - CGRectGetMinX(self.scollView.frame), offset.y - CGRectGetMinY(self.scollView.frame));
         CGPoint endPoint = CGPointMake(MAX(0, startPoint.x) + CGRectGetWidth(self.bounds), MAX(OFFSET_TOP, startPoint.y) + CGRectGetHeight(self.bounds));
         
         NSInteger startIndex = 0;
-        for (NSInteger i = 0; i < self.pages.count; i++) {
-            if (self.pageHeight * (i+1) > startPoint.y) {
+        for (NSInteger i = 0; i < self.backgroundViews.count; i++) {
+            if (self.backgroundViewHeight * (i+1) > startPoint.y) {
                 startIndex = i;
                 break;
             }
         }
         
         NSInteger endIndex = 0;
-        for (NSInteger i = 0; i < self.pages.count; i++) {
-            if ((self.pageHeight * i < endPoint.y && self.pageHeight * (i + 1) >= endPoint.y) || i == self.pages.count - 1) {
+        for (NSInteger i = 0; i < self.backgroundViews.count; i++) {
+            if ((self.backgroundViewHeight * i < endPoint.y && self.backgroundViewHeight * (i + 1) >= endPoint.y) || i == self.backgroundViews.count - 1) {
                 endIndex = i + 1;
                 break;
             }
         }
         
         startIndex = MAX(startIndex - 1, 0);
-        endIndex = MIN(endIndex, self.pages.count - 1);
+        endIndex = MIN(endIndex, self.backgroundViews.count - 1);
         CGFloat pagedLength = endIndex - startIndex + 1;
         
-        if (self.visiblePages.location != startIndex || self.visiblePages.length != pagedLength) {
-            _visiblePages.location = startIndex;
-            _visiblePages.length = pagedLength;
+        if (self.visibleRange.location != startIndex || self.visibleRange.length != pagedLength) {
+            
+            _visibleRange.location = startIndex;
+            _visibleRange.length = pagedLength;
+            
             for (NSInteger i = startIndex; i <= endIndex; i++) {
                 [self setPageAtIndex:i];
             }
             
             for (NSInteger i = 0; i < startIndex; i++) {
-                [self removePageAtIndex:i];
+                [self removeViewAtIndex:i];
             }
             
-            for (NSInteger i = endIndex + 1; i < self.pages.count; i++) {
-                [self removePageAtIndex:i];
+            for (NSInteger i = endIndex + 1; i < self.backgroundViews.count; i++) {
+                [self removeViewAtIndex:i];
             }
         }
     }
@@ -230,20 +226,40 @@
 
 - (void)setPageAtIndex:(NSInteger)index
 {
-    if (index >= 0 && index < self.pages.count) {
+    if (index >= 0 && index < self.backgroundViews.count) {
+
+        UIView *backgroundView = self.backgroundViews[index];
         UIView *page = self.pages[index];
         if ((!page || (NSObject *)page == [NSNull null]) && self.delegate) {
-            page = [self.delegate stackView:self pageForIndex:index];
+            page = [self.delegate stackView:self pageForRowAtIndex:index];
+            backgroundView = [self.delegate stackView:self backgroundViewForRowAtIndex:index];
+            
             [self.pages replaceObjectAtIndex:index withObject:page];
-            page.frame = CGRectMake(0, index * self.pageHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds));
-            self.layer.zPosition = index;
+            [self.backgroundViews replaceObjectAtIndex:index withObject:backgroundView];
+            
+            backgroundView.frame = CGRectMake(0,
+                                              index * self.backgroundViewHeight,
+                                              CGRectGetWidth(self.bounds),
+                                              self.backgroundViewHeight);
+            backgroundView.layer.shadowOpacity = 0.3;
+            backgroundView.layer.shadowOffset = CGSizeMake(-0.2, 0.2);
+            backgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
+            backgroundView.layer.shadowPath = [UIBezierPath bezierPathWithRect:backgroundView.bounds].CGPath;
+            
+            page.frame = CGRectMake(CGRectGetMinX(page.frame),
+                                    index * self.backgroundViewHeight + CGRectGetMinY(page.frame),
+                                    CGRectGetWidth(page.frame),
+                                    self.pageHeight);
         }
         
-        if (!page.superview) {
-            if ((index == 0 || self.pages[index - 1] == [NSNull null]) && index+1 < self.pages.count) {
+        if (!backgroundView.superview) {
+            if ((index == 0 || self.backgroundViews[index - 1] == [NSNull null]) && index+1 < self.backgroundViews.count) {
                 UIView *topPage = self.pages[index + 1];
-                [self.scollView insertSubview:page belowSubview:topPage];
+                
+                [self.scollView insertSubview:backgroundView aboveSubview:topPage];
+                [self.scollView insertSubview:page aboveSubview:backgroundView];
             } else {
+                [self.scollView addSubview:backgroundView];
                 [self.scollView addSubview:page];
             }
             
@@ -264,24 +280,45 @@
     [self.reusablePages addObject:page];
 }
 
+- (void)enqueueReusableBackgroundView:(UIView *)backgroundView
+{
+    [self.reusableBackgroundViews addObject:backgroundView];
+}
+
 - (UIView *)dequeueReusablePage
 {
     UIView *page = [self.reusablePages lastObject];
     if (page && (NSObject *)page != [NSNull null]) {
         [self.reusablePages removeLastObject];
+        
         return page;
     }
     
     return nil;
 }
 
-- (void)removePageAtIndex:(NSInteger)index
+- (UIView *)dequeueReusableBackgroundView
 {
+    UIView *backgroundView = [self.reusableBackgroundViews lastObject];
+    if (backgroundView && (NSObject *)backgroundView != [NSNull null]) {
+        [self.reusableBackgroundViews removeLastObject];
+        
+        return backgroundView;
+    }
+    
+    return nil;
+}
+
+- (void)removeViewAtIndex:(NSInteger)index
+{
+    UIView *backgroundView = self.backgroundViews[index];
     UIView *page = self.pages[index];
-    if (page && (NSObject *)page != [NSNull null]) {
-        page.layer.transform = CATransform3DIdentity;
+    if (backgroundView && (NSObject *)backgroundView != [NSNull null]) {
+        [backgroundView removeFromSuperview];
         [page removeFromSuperview];
+        [self enqueueReusableBackgroundView:backgroundView];
         [self enqueueReusablePage:page];
+        [self.backgroundViews replaceObjectAtIndex:index withObject:[NSNull null]];
         [self.pages replaceObjectAtIndex:index withObject:[NSNull null]];
     }
 }
@@ -301,7 +338,6 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self setPageAtOffset:scrollView.contentOffset];
-    [self reloadVisiblePages];
 }
 
 @end
