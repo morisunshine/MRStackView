@@ -14,14 +14,12 @@
 #define TOP_OFFSET_HIDE 20.f
 #define BOTTOM_OFFSET_HIDE 20.f
 #define COLLAPSED_OFFSET 5.f
-#define SHADOW_VECTOR CGSizeMake(0.f,-.5f)
-#define SHADOW_ALPHA .3f
+#define SHADOW_VECTOR CGSizeMake(-0.2, 0.2)
+#define SHADOW_ALPHA 0.3f
 
 @interface MRStackView()
 
-@property (nonatomic) UIScrollView *scollView;
 @property (nonatomic) NSMutableArray *reusablePages;
-@property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) NSMutableArray *reusableBackgroundViews;
 @property (nonatomic) NSMutableArray *backgroundViews;
 @property (nonatomic) NSRange visibleRange;
@@ -88,12 +86,12 @@
 
         self.scollView.scrollEnabled = NO;
     } else {
-        [self resetPages];
+        [self resetPagesAndBackgroundView];
         self.selectedPageIndex = -1;
     }
 }
 
-- (void)resetPages
+- (void)resetPagesAndBackgroundView
 {
     NSInteger start = self.visibleRange.location;
     NSInteger stop = self.visibleRange.location + self.visibleRange.length;
@@ -253,8 +251,8 @@
                                               index * self.backgroundViewHeight,
                                               CGRectGetWidth(self.bounds),
                                               self.backgroundViewHeight);
-            backgroundView.layer.shadowOpacity = 0.3;
-            backgroundView.layer.shadowOffset = CGSizeMake(-0.2, 0.2);
+            backgroundView.layer.shadowOpacity = SHADOW_ALPHA;
+            backgroundView.layer.shadowOffset = SHADOW_VECTOR;
             backgroundView.layer.shadowColor = [UIColor blackColor].CGColor;
             backgroundView.layer.shadowPath = [UIBezierPath bezierPathWithRect:backgroundView.bounds].CGPath;
             
@@ -333,8 +331,10 @@
 {
     UIView *page = sender.view;
     NSInteger index = [self.pages indexOfObject:page];
+    if (self.delegate) {
+        [self.delegate stackView:self selectedPageAtIndex:index];
+    }
     [self selectPageAtIndex:index];
-    [self.delegate stackView:self selectedPageAtIndex:index];
 }
 
 #pragma mark - ScollView Delegate -

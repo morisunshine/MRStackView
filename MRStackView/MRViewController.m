@@ -12,6 +12,7 @@
 @interface MRViewController () <MRStackViewDelegate>
 {
     NSMutableArray *pages_;
+    UIViewController *viewController_;
 }
 
 @property (nonatomic, retain) MRStackView *stackView;
@@ -106,7 +107,19 @@
 
 - (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index
 {
+    UIView *page = self.stackView.pages[index];
+    viewController_ = [[UIViewController alloc] init];
+    viewController_.view.backgroundColor = [self colorRandom];
+    [self addChildViewController:viewController_];
+    [self.view addSubview:viewController_.view];
+    [viewController_ didMoveToParentViewController:self];
+    viewController_.view.frame = page.frame;
+    UITapGestureRecognizer *tapGR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
+    [viewController_.view addGestureRecognizer:tapGR];
     
+    [UIView animateWithDuration:0.4 animations:^{
+        viewController_.view.frame = self.view.bounds;
+    }];
 }
 
 #pragma mark - Private Methods -
@@ -124,6 +137,19 @@
     UIColor *color = [UIColor colorWithRed:[comps[0] floatValue] green:[comps[1] floatValue] blue:[comps[2] floatValue] alpha:1.0];
     
     return color;
+}
+
+#pragma mark - Actions -
+
+- (IBAction)tapped:(UITapGestureRecognizer *)sender
+{
+    [self.stackView resetPagesAndBackgroundView];
+    [UIView animateWithDuration:0.03 animations:^{
+        viewController_.view.alpha = 0;
+    } completion:^(BOOL finished) {
+        [viewController_ removeFromParentViewController];
+        [viewController_.view removeFromSuperview];
+    }];
 }
 
 @end

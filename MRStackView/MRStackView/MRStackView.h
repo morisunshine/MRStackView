@@ -12,11 +12,14 @@
 
 @interface MRStackView : UIView <UIScrollViewDelegate>
 
+@property (nonatomic) UIScrollView *scollView;
 @property (nonatomic, weak) id<MRStackViewDelegate> delegate;
 @property (nonatomic) CGFloat contentViewTop;
+@property (nonatomic) NSMutableArray *pages;
 
 - (UIView *)dequeueReusablePage;
 - (UIView *)dequeueReusableBackgroundView;
+- (void)resetPagesAndBackgroundView;
 
 @end
 

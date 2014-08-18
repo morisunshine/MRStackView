@@ -25,7 +25,6 @@
 		186059BF1994A15E0049C6EA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 186059BD1994A15E0049C6EA /* InfoPlist.strings */; };
 		186059C11994A15E0049C6EA /* MRStackViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 186059C01994A15E0049C6EA /* MRStackViewTests.m */; };
 		18FF449D199854E400BBC071 /* MRStackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FF449C199854E400BBC071 /* MRStackView.m */; };
-		18FF44AD1998AE3300BBC071 /* MRStackViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,8 +62,6 @@
 		186059C01994A15E0049C6EA /* MRStackViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MRStackViewTests.m; sourceTree = "<group>"; };
 		18FF449B199854E400BBC071 /* MRStackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStackView.h; sourceTree = "<group>"; };
 		18FF449C199854E400BBC071 /* MRStackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStackView.m; sourceTree = "<group>"; };
-		18FF44AB1998AE3300BBC071 /* MRStackViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRStackViewCell.h; sourceTree = "<group>"; };
-		18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRStackViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,8 +173,6 @@
 			children = (
 				18FF449B199854E400BBC071 /* MRStackView.h */,
 				18FF449C199854E400BBC071 /* MRStackView.m */,
-				18FF44AB1998AE3300BBC071 /* MRStackViewCell.h */,
-				18FF44AC1998AE3300BBC071 /* MRStackViewCell.m */,
 			);
 			path = MRStackView;
 			sourceTree = "<group>";
@@ -282,7 +277,6 @@
 			files = (
 				18FF449D199854E400BBC071 /* MRStackView.m in Sources */,
 				186059A21994A15E0049C6EA /* main.m in Sources */,
-				18FF44AD1998AE3300BBC071 /* MRStackViewCell.m in Sources */,
 				186059AC1994A15E0049C6EA /* MRViewController.m in Sources */,
 				186059A61994A15E0049C6EA /* MRAppDelegate.m in Sources */,
 			);
