@@ -8,7 +8,6 @@
 
 #import "MRStackView.h"
 
-#define OFFSET_TOP 30.f
 #define PAGE_PEAK 80.f
 #define MINIMUM_ALPHA 0.5f
 #define MINIMUM_SCALE 0.9f
@@ -57,8 +56,8 @@
     self.pageCount = 0;
     self.selectedPageIndex = -1;
     self.pages = [[NSMutableArray alloc] init];
-    self.reusablePages = [[NSMutableArray alloc] init];
     self.backgroundViews = [[NSMutableArray alloc] init];
+    self.reusablePages = [[NSMutableArray alloc] init];
     self.reusableBackgroundViews = [[NSMutableArray alloc] init];
     self.visibleRange = NSMakeRange(0, 0);
 }
@@ -107,7 +106,7 @@
                 page.frame = CGRectMake(15, 15, CGRectGetWidth(page.frame) - 30, CGRectGetHeight(page.frame) - 15);
             } else {
                 CGRect rect = page.frame;
-                rect.origin.y = OFFSET_TOP + i * self.pageHeight;
+                rect.origin.y = i * self.pageHeight;
                 page.frame = rect;
             }
         }
@@ -172,7 +171,7 @@
     }
     
     self.scollView.frame = self.bounds;
-    self.scollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds), MAX(CGRectGetHeight(self.bounds), OFFSET_TOP + self.pageCount * self.backgroundViewHeight));
+    self.scollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds), MAX(CGRectGetHeight(self.bounds), self.pageCount * self.backgroundViewHeight));
     [self addSubview:self.scollView];
     
     [self setPageAtOffset:self.scollView.contentOffset];
@@ -182,7 +181,7 @@
 {
     if (0 < self.backgroundViews.count) {
         CGPoint startPoint = CGPointMake(offset.x - CGRectGetMinX(self.scollView.frame), offset.y - CGRectGetMinY(self.scollView.frame));
-        CGPoint endPoint = CGPointMake(MAX(0, startPoint.x) + CGRectGetWidth(self.bounds), MAX(OFFSET_TOP, startPoint.y) + CGRectGetHeight(self.bounds));
+        CGPoint endPoint = CGPointMake(MAX(0, startPoint.x) + CGRectGetWidth(self.bounds), startPoint.y + CGRectGetHeight(self.bounds));
         
         NSInteger startIndex = 0;
         for (NSInteger i = 0; i < self.backgroundViews.count; i++) {
@@ -226,11 +225,13 @@
 
 - (void)setPageAtIndex:(NSInteger)index
 {
-    if (index >= 0 && index < self.backgroundViews.count) {
+    if (0 <= index && index < self.backgroundViews.count) {
 
         UIView *backgroundView = self.backgroundViews[index];
         UIView *page = self.pages[index];
-        if ((!page || (NSObject *)page == [NSNull null]) && self.delegate) {
+        if (((!page || (NSObject *)page == [NSNull null]) ||
+            (!backgroundView || (NSObject *)backgroundView == [NSNull null])) &&
+            self.delegate) {
             page = [self.delegate stackView:self pageForRowAtIndex:index];
             backgroundView = [self.delegate stackView:self backgroundViewForRowAtIndex:index];
             
@@ -247,24 +248,14 @@
             backgroundView.layer.shadowPath = [UIBezierPath bezierPathWithRect:backgroundView.bounds].CGPath;
             
             page.frame = CGRectMake(CGRectGetMinX(page.frame),
-                                    index * self.backgroundViewHeight + CGRectGetMinY(page.frame),
+                                    index * self.backgroundViewHeight + 10,
                                     CGRectGetWidth(page.frame),
                                     self.pageHeight);
         }
         
-        if (!backgroundView.superview) {
-            if ((index == 0 || self.backgroundViews[index - 1] == [NSNull null]) && index+1 < self.backgroundViews.count) {
-                UIView *topPage = self.pages[index + 1];
-                
-                [self.scollView insertSubview:backgroundView aboveSubview:topPage];
-                [self.scollView insertSubview:page aboveSubview:backgroundView];
-            } else {
-                [self.scollView addSubview:backgroundView];
-                [self.scollView addSubview:page];
-            }
-            
-            page.tag = index;
-        }
+        [self.scollView insertSubview:backgroundView atIndex:2*index];
+        [self.scollView insertSubview:page atIndex:2*index + 1];
+        
         
         if (page.gestureRecognizers.count < 1) {
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
@@ -313,7 +304,9 @@
 {
     UIView *backgroundView = self.backgroundViews[index];
     UIView *page = self.pages[index];
-    if (backgroundView && (NSObject *)backgroundView != [NSNull null]) {
+    
+    if (backgroundView && (NSObject *)backgroundView != [NSNull null]&&
+        page && (NSObject *)page != [NSNull null]) {
         [backgroundView removeFromSuperview];
         [page removeFromSuperview];
         [self enqueueReusableBackgroundView:backgroundView];
