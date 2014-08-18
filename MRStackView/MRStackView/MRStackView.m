@@ -81,16 +81,16 @@
 
 - (void)selectPageAtIndex:(NSInteger)index
 {
-//    if (index != self.selectedPageIndex) {
-//        self.selectedPageIndex = index;
-//        [self hidePagesExcept:index];
-//        [self showPagesFullScreen:index];
-//
-//        self.scollView.scrollEnabled = NO;
-//    } else {
-//        [self resetPages];
-//        self.selectedPageIndex = -1;
-//    }
+    if (index != self.selectedPageIndex) {
+        self.selectedPageIndex = index;
+        [self hidePagesAndBackgroundViewExcept:index];
+        [self showPagesFullScreen:index];
+
+        self.scollView.scrollEnabled = NO;
+    } else {
+        [self resetPages];
+        self.selectedPageIndex = -1;
+    }
 }
 
 - (void)resetPages
@@ -101,14 +101,17 @@
         for (NSInteger i = start; i < stop; i++) {
             
             UIView *page = self.pages[i];
+            UIView *backgroundView = self.backgroundViews[i];
             
-            if (self.selectedPageIndex == i) {
-                page.frame = CGRectMake(15, 15, CGRectGetWidth(page.frame) - 30, CGRectGetHeight(page.frame) - 15);
-            } else {
-                CGRect rect = page.frame;
-                rect.origin.y = i * self.pageHeight;
-                page.frame = rect;
-            }
+            backgroundView.frame = CGRectMake(0,
+                                              i * self.backgroundViewHeight,
+                                              CGRectGetWidth(self.bounds),
+                                              self.backgroundViewHeight);
+            
+            page.frame = CGRectMake(CGRectGetMinX(page.frame),
+                                    i * self.backgroundViewHeight + self.contentViewTop,
+                                    CGRectGetWidth(page.frame),
+                                    self.pageHeight);
         }
     }];
     
@@ -119,26 +122,34 @@
 {
     UIView *page = (UIView *)self.pages[index];
     CGRect rect = page.frame;
-    NSLog(@"rect: %@", NSStringFromCGRect(rect));
     
     [UIView animateWithDuration:0.4 animations:^{
         CGRect newRect = rect;
-        newRect.origin.y = -rect.origin.y;
+        newRect.origin.y = self.scollView.contentOffset.y;
         newRect.origin.x = page.frame.origin.x;
         page.frame = newRect;
     }];
 }
 
-- (void)hidePagesExcept:(NSInteger)index
+- (void)hidePagesAndBackgroundViewExcept:(NSInteger)index
 {
     NSInteger start = self.visibleRange.location;
     NSInteger stop = self.visibleRange.location + self.visibleRange.length;
     [UIView animateWithDuration:0.4 animations:^{
         for (NSInteger i = start; i < stop; i++) {
-            UIView *page = (UIView *)self.pages[i];
-            CGRect rect = page.frame;
-            rect.origin.y = self.scollView.contentOffset.y + CGRectGetHeight(self.frame) - BOTTOM_OFFSET_HIDE + i * COLLAPSED_OFFSET;
-            page.frame = rect;
+
+            UIView *backgroundView = (UIView *)self.backgroundViews[i];
+            CGFloat top = self.scollView.contentOffset.y + CGRectGetHeight(self.frame);
+            CGRect backgroundViewRect = backgroundView.frame;
+            backgroundViewRect.origin.y = top;
+            backgroundView.frame = backgroundViewRect;
+            
+            if (i != index) {
+                UIView *page = (UIView *)self.pages[i];
+                CGRect pageRect = page.frame;
+                pageRect.origin.y = top;
+                page.frame = pageRect;
+            }
         }
     }];
 }
@@ -248,7 +259,7 @@
             backgroundView.layer.shadowPath = [UIBezierPath bezierPathWithRect:backgroundView.bounds].CGPath;
             
             page.frame = CGRectMake(CGRectGetMinX(page.frame),
-                                    index * self.backgroundViewHeight + 10,
+                                    index * self.backgroundViewHeight + self.contentViewTop,
                                     CGRectGetWidth(page.frame),
                                     self.pageHeight);
         }

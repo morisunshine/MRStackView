@@ -57,6 +57,7 @@
     if (!_stackView) {
         _stackView = [[MRStackView alloc] initWithFrame:self.view.bounds];
         _stackView.delegate = self;
+        _stackView.contentViewTop = 10;
     }
     
     return _stackView;

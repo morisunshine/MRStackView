@@ -13,6 +13,7 @@
 @interface MRStackView : UIView <UIScrollViewDelegate>
 
 @property (nonatomic, weak) id<MRStackViewDelegate> delegate;
+@property (nonatomic) CGFloat contentViewTop;
 
 - (UIView *)dequeueReusablePage;
 - (UIView *)dequeueReusableBackgroundView;
