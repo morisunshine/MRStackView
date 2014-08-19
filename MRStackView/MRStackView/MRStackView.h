@@ -16,14 +16,16 @@
 @property (nonatomic, weak) id<MRStackViewDelegate> delegate;
 @property (nonatomic) CGFloat contentViewTop;
 @property (nonatomic) NSMutableArray *pages;
+@property (nonatomic) NSInteger selectedPageIndex;
 
 - (UIView *)dequeueReusablePage;
 - (UIView *)dequeueReusableBackgroundView;
 - (void)resetPagesAndBackgroundView;
+- (void)reloadVisiblePages;
 
 @end
 
-@protocol MRStackViewDelegate
+@protocol MRStackViewDelegate <NSObject>
 
 - (UIView *)stackView:(MRStackView *)stackView pageForRowAtIndex:(NSInteger)index;
 
@@ -38,5 +40,9 @@
 @optional
 
 - (void)stackView:(MRStackView *)stackView selectedPageAtIndex:(NSInteger)index;
+
+- (void)stackView:(MRStackView *)stackView showAnimationWithIndex:(NSInteger)index;
+
+- (void)stackView:(MRStackView *)stackView resetPagesAndBackgroundViewWithIndex:(NSInteger)index;
 
 @end
